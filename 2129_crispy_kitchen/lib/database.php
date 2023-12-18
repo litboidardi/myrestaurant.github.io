@@ -59,6 +59,57 @@ class database
             echo "Error inserting reservation: " . $e->getMessage();
         }
     }
+
+    public function updateReservation($reservationId, $newDate, $newTime)
+    {
+        try {
+            $stmt = $this->connection->prepare("
+            UPDATE reservations
+            SET date = :newDate, time = :newTime
+            WHERE id = :reservationId
+        ");
+
+            $stmt->bindParam(':newDate', $newDate);
+            $stmt->bindParam(':newTime', $newTime);
+            $stmt->bindParam(':reservationId', $reservationId);
+
+            $stmt->execute();
+
+            // Check if the update was successful
+            return $stmt->rowCount() > 0;
+        } catch (\PDOException $e) {
+            echo "Error updating reservation: " . $e->getMessage();
+            return false;
+        }
+    }
+
+    // Inside your Database class
+    public function getReservationByUserId($userId)
+    {
+        try {
+            $stmt = $this->connection->prepare("
+            SELECT * FROM reservations WHERE user_id = :user_id");
+
+            $stmt->bindParam(':user_id', $userId);
+            $stmt->execute();
+
+            return $stmt->fetch(PDO::FETCH_ASSOC); // Fetch the first row as an associative array
+        } catch (\PDOException $e) {
+            echo "Error fetching reservation data: " . $e->getMessage();
+            return false;
+        }
+    }
+
+    public function deleteReservation($reservationId)
+    {
+        try {
+            $stmt = $this->connection->prepare("DELETE FROM reservations WHERE id = :id");
+            $stmt->bindParam(':id', $reservationId);
+            $stmt->execute();
+        } catch (\PDOException $e) {
+            echo "Error deleting reservation: " . $e->getMessage();
+        }
+    }
     public function insertContact($name, $phone, $email, $message)
     {
         try {
