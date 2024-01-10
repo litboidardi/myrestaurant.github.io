@@ -6,9 +6,9 @@
         <a class="navbar-brand" href="index.php">
             Crispy Kitchen
         </a>
-        <div class="d-lg-none">
+        <!--<div class="d-lg-none">
             <button type="button" class="custom-btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#BookingModal">Reservation</button>
-        </div>
+        </div>-->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mx-auto">
                 <li class="nav-item">

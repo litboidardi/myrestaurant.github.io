@@ -1,22 +1,28 @@
 function submitReservation(event) {
-    event.preventDefault();
-    let formData = $('#reservationForm').serialize();
-    var errorMessageElement = $('#reservationForm').find('.error-message');
-    $.ajax({
-        type: 'POST',
-        url: 'lib/process_reservation.php', // Adjust the path accordingly
-        data: formData,
-        success: function (response) {
-            if (response.status === 'success') {
-                window.location.href = '../index.php';
-            } else {
-                errorMessageElement.text(response.message);
+    if(confirm("Are you sure you want to submit this reservation?")) {
+        event.preventDefault();
+        let formData = $('#reservationForm').serialize();
+        var errorMessageElement = $('#reservationForm').find('.error-message');
+        $.ajax({
+            type: 'POST',
+            url: 'lib/process_reservation.php', // Adjust the path accordingly
+            data: formData,
+            success: function (response) {
+                if (response.status === 'success') {
+
+                    window.location.href = '../index.php';
+                } else {
+                    errorMessageElement.text(response.message);
+                }
+            },
+            error: function (error) {
+                errorMessageElement.text(error.responseText);
             }
-        },
-        error: function (error) {
-            errorMessageElement.text(error.responseText);
-        }
-    });
+        });
+        alert("Your reservation was submitted!");
+    } else {
+        alert("Your reservation was not submitted!")
+    }
 }
 
 $('#reservationForm').on('submit', submitReservation);
@@ -53,19 +59,54 @@ function deleteReservation(reservationId) {
     }
 }
 
-function updateReservation(reservationId) {
-    let formData = $('#reservationForm').serialize();
-    // Include reservationId in your formData or handle it as needed
-
+var currentId = 0;
+function loadReservationData(reservationId) {
+    currentId = reservationId;
     $.ajax({
-        type: 'POST',
-        url: `../lib/update_reservation.php?id=${reservationId}`,
-        data: formData,
-        success: function (response) {
-            location.reload();
+        url: 'lib/get_reservation.php', // Cesta k serverovému skriptu, ktorý vráti údaje rezervácie
+        type: 'GET',
+        data: { id: reservationId },
+        success: function(reservationData) {
+            // Predpokladajme, že 'reservationData' je objekt s údajmi rezervácie
+            $('#name').val(reservationData.name);
+            $('#email').val(reservationData.email);
+            $('#phone').val(reservationData.phone);
+            $('#people').val(reservationData.people);
+            $('#date').val(reservationData.date);
+            $('#time').val(reservationData.time);
+            $('#message').val(reservationData.message);
         },
-        error: function (error) {
-            console.error(error.responseText);
+        error: function(error) {
+            // Spracovanie chýb
+            console.error("Chyba pri načítaní údajov: ", error);
         }
     });
 }
+
+function updateReservation() {
+    var formData = {
+        "reservation-id": currentId,
+        "name": $('#name').val(),
+        "email": $('#email').val(),
+        "phone": $('#phone').val(),
+        "people": $('#people').val(),
+        "date": $('#date').val(),
+        "time": $('#time').val(),
+        "message": $('#message').val()
+    };
+
+    $.ajax({
+        url: 'lib/update_reservation.php', // Zmena na správnu URL
+        type: 'POST',
+        data: formData,
+        success: function(response) {
+            $('#UpdateModal').modal('hide');
+            alert("Reservation Updated Successfully!");
+        },
+        error: function(error) {
+            console.error("Chyba pri aktualizácii: ", error);
+        }
+    });
+}
+
+

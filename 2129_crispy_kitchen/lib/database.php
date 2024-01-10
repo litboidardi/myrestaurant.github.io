@@ -1,6 +1,8 @@
 <?php
 namespace lib;
 
+use PDO;
+
 class database
 {
     private $host = "localhost";
@@ -60,40 +62,35 @@ class database
         }
     }
 
-    public function updateReservation($reservationId, $newDate, $newTime)
-    {
-        try {
-            $stmt = $this->connection->prepare("
-            UPDATE reservations
-            SET date = :newDate, time = :newTime
-            WHERE id = :reservationId
-        ");
-
-            $stmt->bindParam(':newDate', $newDate);
-            $stmt->bindParam(':newTime', $newTime);
-            $stmt->bindParam(':reservationId', $reservationId);
-
-            $stmt->execute();
-
-            // Check if the update was successful
-            return $stmt->rowCount() > 0;
-        } catch (\PDOException $e) {
-            echo "Error updating reservation: " . $e->getMessage();
-            return false;
-        }
+    public function updateReservation($id, $name, $email, $phone, $people, $date, $time, $message) {
+        $sql = "UPDATE reservations SET name = :name, email = :email, phone = :phone, people = :people, date = :date, time = :time, message = :message WHERE id = :id";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':phone', $phone);
+        $stmt->bindParam(':people', $people);
+        $stmt->bindParam(':date', $date);
+        $stmt->bindParam(':time', $time);
+        $stmt->bindParam(':message', $message);
+        return $stmt->execute();
     }
 
+
+
+
     // Inside your Database class
-    public function getReservationByUserId($userId)
+    public function getReservationById($userId)
     {
         try {
             $stmt = $this->connection->prepare("
-            SELECT * FROM reservations WHERE user_id = :user_id");
+            SELECT * FROM reservations WHERE id = :user_id");
 
             $stmt->bindParam(':user_id', $userId);
             $stmt->execute();
 
             return $stmt->fetch(PDO::FETCH_ASSOC); // Fetch the first row as an associative array
+
         } catch (\PDOException $e) {
             echo "Error fetching reservation data: " . $e->getMessage();
             return false;
