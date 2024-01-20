@@ -19,7 +19,9 @@
 - Check messages sent by customers
   - appearing after clicking on a button
 - Check reservations created by customers
-  - appearing after clicking on a button 
+  - appearing after clicking on a button
+- Edit reservations created by customers
+- Delete reservations created by customers  
 - Logout
   - destroy the session
   - redirect to main page
